@@ -1,4 +1,4 @@
 LAM
 ===
 
-Light Asset Manager
+LAM: Asset Manager
