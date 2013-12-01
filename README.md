@@ -10,28 +10,28 @@ It is very simple. Install `Manage` through `npm`: `npm install -g manage`
 Then create a `manage.json` file in the root of your project. Here is an example that fits the `testcase` folder:
 
 ```json
-	{
-		"buildPath": "build/",
-		"styles": {
-			"prerequisites": [
-				"testcase/css/libs/somelib.css"
-			],
-			"app": [
-				"testcase/css/app/someapp.css"
-			],
-			"output": "app.min.css"
-		},
-		"scripts": {
-			"prerequisites": [
-				"testcase/js/libs/somelib.js",
-				"testcase/js/libs/someotherlib.js"
-			],
-			"app": [
-				"testcase/js/app/someapp.js"
-			],
-			"output": "app.min.js"
-		}
+{
+	"buildPath": "build/",
+	"styles": {
+		"prerequisites": [
+			"testcase/css/libs/somelib.css"
+		],
+		"app": [
+			"testcase/css/app/someapp.css"
+		],
+		"output": "app.min.css"
+	},
+	"scripts": {
+		"prerequisites": [
+			"testcase/js/libs/somelib.js",
+			"testcase/js/libs/someotherlib.js"
+		],
+		"app": [
+			"testcase/js/app/someapp.js"
+		],
+		"output": "app.min.js"
 	}
+}
 ```
 
 Then you simply run manage from a command line by invoking `manage`.
