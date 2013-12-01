@@ -1,3 +1,5 @@
+#!/usr/bin/env node
+
 var _ = require("underscore");
 var fs = require("fs");
 var Compiler = require("./compiler.js");
@@ -44,7 +46,13 @@ var changeEventHandler = function (type, compiler, queue) {
 };
 
 try {
-	var settingsFile = (process.argv[2] != undefined ? process.argv[2] : "lam.json");
+	var settingsFile = (process.argv[2] != undefined ? process.argv[2] : "manage.json");
+
+	if (!fs.existsSync(settingsFile)) {
+		console.log("You have to create a lam.json file, or specify another file as a command line argument.");
+		return;
+	}
+	
 	var settings = JSON.parse(fs.readFileSync(settingsFile));
 	
 	try {
