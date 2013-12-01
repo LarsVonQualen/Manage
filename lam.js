@@ -46,6 +46,13 @@ var changeEventHandler = function (type, compiler, queue) {
 try {
 	var settingsFile = (process.argv[2] != undefined ? process.argv[2] : "lam.json");
 	var settings = JSON.parse(fs.readFileSync(settingsFile));
+	
+	try {
+		fs.mkdirSync(settings.buildPath);
+	} catch (e) {
+		
+	}
+	
 	var compiler = new Compiler(settings);
 	var queue = new TaskQueue();
 	queue.run();
