@@ -5,10 +5,11 @@
 At the moment, i'm looking into adding simple templating, so that you simply add a token where you want your style and script bundle to appear, and `Manage` will automatically replace the token with the appropriate html tags.
 
 ## How To
-It is very simple. Install `Manage` through `npm`:
-	npm install -g manage
+It is very simple. Install `Manage` through `npm`: `npm install -g manage`
 
 Then create a `manage.json` file in the root of your project. Here is an example that fits the `testcase` folder:
+
+```json
 	{
 		"buildPath": "build/",
 		"styles": {
@@ -31,5 +32,6 @@ Then create a `manage.json` file in the root of your project. Here is an example
 			"output": "app.min.js"
 		}
 	}
+```
 
 Then you simply run manage from a command line by invoking `manage`.
