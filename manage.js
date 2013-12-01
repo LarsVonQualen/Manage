@@ -35,7 +35,7 @@ var changeEventHandler = function (type, compiler, queue) {
 	console.log("Change detected, scheduled compile task.")
 
 	queue.push(function (id) {
-		compiler.compile(type).then(function (data) {
+		compiler.compile(type, id).then(function (data) {
 			console.log("<Task-#" + id + "> Done")
 		}, function (err) {
 			console.log("<Task-#" + id + "> " + err);
@@ -66,7 +66,7 @@ try {
 	queue.run();
 	
 	queue.push(function (id) {
-		compiler.compile("scripts").then(function (data) {
+		compiler.compile("scripts", id).then(function (data) {
 			console.log("<Task-#" + id + "> Done")
 		}, function (err) {
 			console.log("<Task-#" + id + "> " + err);
@@ -76,7 +76,7 @@ try {
 	});
 	
 	queue.push(function (id) {
-		compiler.compile("styles").then(function (data) {
+		compiler.compile("styles", id).then(function (data) {
 			console.log("<Task-#" + id + "> Done")
 		}, function (err) {
 			console.log("<Task-#" + id + "> " + err);
