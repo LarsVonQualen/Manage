@@ -64,6 +64,26 @@ try {
 	var compiler = new Compiler(settings);
 	var queue = new TaskQueue();
 	queue.run();
+	
+	queue.push(function (id) {
+		compiler.compile("scripts").then(function (data) {
+			console.log("<Task-#" + id + "> Done")
+		}, function (err) {
+			console.log("<Task-#" + id + "> " + err);
+		}, function (progress) {
+			console.log("<Task-#" + id + "> " + progress);
+		});
+	});
+	
+	queue.push(function (id) {
+		compiler.compile("styles").then(function (data) {
+			console.log("<Task-#" + id + "> Done")
+		}, function (err) {
+			console.log("<Task-#" + id + "> " + err);
+		}, function (progress) {
+			console.log("<Task-#" + id + "> " + progress);
+		});
+	});
 
 	watchr.watch(new WatchrObject(settings.scripts.prerequisites, function () {
 		changeEventHandler("scripts", compiler, queue);
