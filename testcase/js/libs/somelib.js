@@ -1,3 +1,3 @@
 function Somelib() {
-	console.log("This is somelib");
+	console.log("This is somelibTest");
 }

@@ -6,7 +6,7 @@ var Compiler = require("./compiler.js");
 var TaskQueue = require("./taskqueue.js");
 var watchr = require("watchr");
 
-var WatchrObject = function (paths, changeCallback) {
+var WatchrObject = function (paths, changeCallback, nextCallback) {
 	return {
 	    paths: paths,
 		preferredMethods: ['watchFile','watch'],
@@ -24,10 +24,13 @@ var WatchrObject = function (paths, changeCallback) {
 	        },
 	        change: function(changeType, filePath, fileCurrentStat, filePreviousStat){
 				if (_.isFunction(changeCallback)) {
-					changeCallback();
+					changeCallback(filePath);
 				}
 	        }
-	    }
+	    },
+		next: function (err, watchers) {
+			nextCallback(err, watchers);
+		}
 	}
 };
 
@@ -36,70 +39,70 @@ var changeEventHandler = function (type, compiler, queue) {
 
 	queue.push(function (id) {
 		compiler.compile(type, id).then(function (data) {
-			console.log("<Task-#" + id + "> Done")
+			console.log("<" + new Date().toLocaleTimeString() + "> <#" + id + "> Done")
 		}, function (err) {
-			console.log("<Task-#" + id + "> " + err);
+			console.log("<" + new Date().toLocaleTimeString() + "> <#" + id + "> " + err);
 		}, function (progress) {
-			console.log("<Task-#" + id + "> " + progress);
+			console.log("<" + new Date().toLocaleTimeString() + "> <#" + id + "> " + progress);
 		});
 	});
 };
 
-try {
-	var settingsFile = (process.argv[2] != undefined ? process.argv[2] : "manage.json");
-
-	if (!fs.existsSync(settingsFile)) {
-		console.log("You have to create a lam.json file, or specify another file as a command line argument.");
-		return;
-	}
-	
-	var settings = JSON.parse(fs.readFileSync(settingsFile));
-	
+function main () {
 	try {
-		fs.mkdirSync(settings.buildPath);
-	} catch (e) {
+		var settingsFile = (process.argv[2] != undefined ? process.argv[2] : "manage.json");
+
+		if (!fs.existsSync(settingsFile)) {
+			console.log("You have to create a lam.json file, or specify another file as a command line argument.");
+			return;
+		}
+	
+		var settings = JSON.parse(fs.readFileSync(settingsFile));
+	
+		try {
+			fs.mkdirSync(settings.buildPath);
+		} catch (e) {
 		
+		}
+	
+		var compiler = new Compiler(settings);
+		var queue = new TaskQueue();
+		queue.run();
+	
+		changeEventHandler("scripts", compiler, queue);
+		changeEventHandler("styles", compiler, queue);
+		
+		var reloadTrigger = false;
+		var reloadChecker = function (watchers) {
+			setTimeout(function () {
+				if (reloadTrigger) {
+					for (var i = 0; i < watchers.length; i++) {
+		                watchers[i].close();
+		            }
+					
+					main();
+				} else {
+					reloadChecker(watchers);
+				}
+			}, 500);
+		};
+
+		watchr.watch(new WatchrObject(_.union(settings.scripts.prerequisites, settings.scripts.app, settings.styles.prerequisites, settings.styles.app, [settingsFile]), function (filePath) {
+			if (_.indexOf(settings.scripts.prerequisites, filePath) > -1 || _.indexOf(settings.scripts.app, filePath) > -1)
+			{
+				changeEventHandler("scripts", compiler, queue);
+			} else if (_.indexOf(settings.styles.prerequisites, filePath) > -1 || _.indexOf(settings.styles.app, filePath) > -1)
+			{
+				changeEventHandler("styles", compiler, queue);
+			} else if (filePath == settingsFile) {
+				reloadTrigger = true;
+			}
+		}, function (err, watchers) {
+			reloadChecker(watchers);
+		}));
+	} catch (e) {
+		console.log(e);
 	}
-	
-	var compiler = new Compiler(settings);
-	var queue = new TaskQueue();
-	queue.run();
-	
-	queue.push(function (id) {
-		compiler.compile("scripts", id).then(function (data) {
-			console.log("<Task-#" + id + "> Done")
-		}, function (err) {
-			console.log("<Task-#" + id + "> " + err);
-		}, function (progress) {
-			console.log("<Task-#" + id + "> " + progress);
-		});
-	});
-	
-	queue.push(function (id) {
-		compiler.compile("styles", id).then(function (data) {
-			console.log("<Task-#" + id + "> Done")
-		}, function (err) {
-			console.log("<Task-#" + id + "> " + err);
-		}, function (progress) {
-			console.log("<Task-#" + id + "> " + progress);
-		});
-	});
-
-	watchr.watch(new WatchrObject(settings.scripts.prerequisites, function () {
-		changeEventHandler("scripts", compiler, queue);
-	}));
-
-	watchr.watch(new WatchrObject(settings.scripts.app, function () {
-		changeEventHandler("scripts", compiler, queue);
-	}));
-
-	watchr.watch(new WatchrObject(settings.styles.prerequisites, function () {
-		changeEventHandler("styles", compiler, queue);
-	}));
-
-	watchr.watch(new WatchrObject(settings.styles.app, function () {
-		changeEventHandler("styles", compiler, queue);
-	}));
-} catch (e) {
-	console.log(e);
 }
+
+main();
