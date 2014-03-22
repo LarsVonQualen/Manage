@@ -1,5 +1,5 @@
 function MyApp() {
 	Somelib();
 	Someotherlib();
-	console.log("This is my app, bitch!!!!!!!!!!!!!");
+	console.log("This is my app, hooray!");
 }
