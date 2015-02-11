@@ -1,8 +1,7 @@
 # MANAGE
 `Manage` is a simple, light weight asset manager, tailored for web development. The functionality is very limited, but at the same time very useful. What `Manage` does, is automatically concatenate and minify Javascript and CSS on file change. This means that you can fire up `Manage`, and trust that when you hit that refresh button, your assets are automatically up to date.
 
-## Future Features
-At the moment, i'm looking into adding simple templating, so that you simply add a token where you want your style and script bundle to appear, and `Manage` will automatically replace the token with the appropriate html tags.
+[![NPM](https://nodei.co/npm/manage.png?downloads=true&downloadRank=true&stars=true)](https://nodei.co/npm/manage.png?downloads=true&downloadRank=true&stars=true)
 
 ## How To
 It is very simple. Install `Manage` through `npm`: `npm install -g manage`
